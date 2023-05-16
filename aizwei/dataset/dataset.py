@@ -2,10 +2,11 @@ from aizwei.dataset import Schema
 
 
 class Dataset:
-    def __init__(self, name: str, description: str, schema: Schema):
-        self.name = name
-        self.description = description
-        self.schema = schema
+    def __init__(self, name: str, description: str, schema: Schema, id: str = None):
+        self.id: str = id
+        self.name: str = name
+        self.description: str = description
+        self.schema: Schema = schema
 
     def to_dict(self) -> dict:
         return {
@@ -31,10 +32,20 @@ class Dataset:
 
     @classmethod
     def from_api_response(cls, api_response) -> 'Dataset':
-        return cls(
+        if 'id' in api_response:
+            dataset = cls(
+                name=api_response['name'],
+                description=api_response['description'],
+                schema=Schema.from_api_response(api_response['schema']),
+                id=api_response['id']
+            )
+            return dataset
+
+        dataset = cls(
             name=api_response['name'],
             description=api_response['description'],
             schema=Schema.from_api_response(api_response['schema'])
         )
+        return dataset
 
 

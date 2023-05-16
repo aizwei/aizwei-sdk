@@ -8,7 +8,7 @@ class TestSchema(unittest.TestCase):
 
     def setUp(self) -> None:
         self.schema = Schema()
-        self.schema.add_field(name='field_number', type=Schema.TYPE_NUMBER)
+        self.schema.add_field(name='field_number', type=Schema.TYPE_INTEGER)
         self.schema.add_field(name='field_string', type=Schema.TYPE_STRING)
         self.schema.add_field(name='field_boolean', type=Schema.TYPE_BOOLEAN)
 
@@ -17,30 +17,30 @@ class TestSchema(unittest.TestCase):
         self.assertEqual('field_number', self.schema.get_field_names()[0])
         self.assertEqual('field_string', self.schema.get_field_names()[1])
         self.assertEqual('field_boolean', self.schema.get_field_names()[2])
-        self.assertEqual('number', self.schema.get_field_type('field_number'))
-        self.assertEqual('string', self.schema.get_field_type('field_string'))
-        self.assertEqual('boolean', self.schema.get_field_type('field_boolean'))
+        self.assertEqual(Schema.TYPE_INTEGER, self.schema.get_field_type('field_number'))
+        self.assertEqual(Schema.TYPE_STRING, self.schema.get_field_type('field_string'))
+        self.assertEqual(Schema.TYPE_BOOLEAN, self.schema.get_field_type('field_boolean'))
 
     def test_to_dict(self):
         schema_dict = self.schema.to_dict()
         self.assertEqual(3, len(schema_dict))
-        self.assertEqual('number', schema_dict['field_number'])
-        self.assertEqual('string', schema_dict['field_string'])
-        self.assertEqual('boolean', schema_dict['field_boolean'])
+        self.assertEqual(Schema.TYPE_INTEGER, schema_dict['field_number'])
+        self.assertEqual(Schema.TYPE_STRING, schema_dict['field_string'])
+        self.assertEqual(Schema.TYPE_BOOLEAN, schema_dict['field_boolean'])
 
     def test_to_api_request(self):
         schema_dict = self.schema.to_api_request()
         self.assertEqual(3, len(schema_dict))
-        self.assertEqual('number', schema_dict[0]['type'])
-        self.assertEqual('string', schema_dict[1]['type'])
-        self.assertEqual('boolean', schema_dict[2]['type'])
+        self.assertEqual(Schema.TYPE_INTEGER, schema_dict[0]['type'])
+        self.assertEqual(Schema.TYPE_STRING, schema_dict[1]['type'])
+        self.assertEqual(Schema.TYPE_BOOLEAN, schema_dict[2]['type'])
         self.assertEqual('field_number', schema_dict[0]['name'])
         self.assertEqual('field_string', schema_dict[1]['name'])
         self.assertEqual('field_boolean', schema_dict[2]['name'])
 
     def test_from_dict(self):
         schema_dict = {
-            'field_number': 'number',
+            'field_number': 'integer',
             'field_string': 'string',
             'field_boolean': 'boolean'
         }
@@ -49,13 +49,13 @@ class TestSchema(unittest.TestCase):
         self.assertEqual('field_number', schema.get_field_names()[0])
         self.assertEqual('field_string', schema.get_field_names()[1])
         self.assertEqual('field_boolean', schema.get_field_names()[2])
-        self.assertEqual('number', schema.get_field_type('field_number'))
-        self.assertEqual('string', schema.get_field_type('field_string'))
-        self.assertEqual('boolean', schema.get_field_type('field_boolean'))
+        self.assertEqual(Schema.TYPE_INTEGER, schema.get_field_type('field_number'))
+        self.assertEqual(Schema.TYPE_STRING, schema.get_field_type('field_string'))
+        self.assertEqual(Schema.TYPE_BOOLEAN, schema.get_field_type('field_boolean'))
 
     def test_from_dict_invalid_type(self):
         schema_dict = {
-            'field_number': 'number',
+            'field_number': 'integer',
             'field_string': 'string',
             'field_boolean': 'invalid'
         }
@@ -73,15 +73,15 @@ class TestSchema(unittest.TestCase):
     def test_get_field(self):
         field = self.schema.get_field('field_number')
         self.assertEqual('field_number', field['name'])
-        self.assertEqual('number', field['type'])
+        self.assertEqual(Schema.TYPE_INTEGER, field['type'])
 
     def test_get_field_not_found(self):
         self.assertIsNone(self.schema.get_field('not_found'))
 
     def test_get_field_type(self):
-        self.assertEqual('number', self.schema.get_field_type('field_number'))
-        self.assertEqual('string', self.schema.get_field_type('field_string'))
-        self.assertEqual('boolean', self.schema.get_field_type('field_boolean'))
+        self.assertEqual(Schema.TYPE_INTEGER, self.schema.get_field_type('field_number'))
+        self.assertEqual(Schema.TYPE_STRING, self.schema.get_field_type('field_string'))
+        self.assertEqual(Schema.TYPE_BOOLEAN, self.schema.get_field_type('field_boolean'))
 
     def test_get_field_type_not_found(self):
         self.assertIsNone(self.schema.get_field_type('not_found'))
@@ -96,10 +96,10 @@ class TestSchema(unittest.TestCase):
         self.assertEqual(3, self.schema.get_field_count())
 
     def test_add_field(self):
-        self.schema.add_field(name='field_new', type=Schema.TYPE_NUMBER)
+        self.schema.add_field(name='field_new', type=Schema.TYPE_INTEGER)
         self.assertEqual(4, self.schema.get_field_count())
         self.assertEqual('field_new', self.schema.get_field_names()[3])
-        self.assertEqual('number', self.schema.get_field_type('field_new'))
+        self.assertEqual(Schema.TYPE_INTEGER, self.schema.get_field_type('field_new'))
 
     def test_add_field_invalid_type(self):
         with self.assertRaises(Exception):
@@ -107,4 +107,4 @@ class TestSchema(unittest.TestCase):
 
     def test_add_field_duplicate(self):
         with self.assertRaises(Exception):
-            self.schema.add_field(name='field_number', type=Schema.TYPE_NUMBER)
+            self.schema.add_field(name='field_number', type=Schema.TYPE_INTEGER)

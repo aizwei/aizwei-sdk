@@ -9,16 +9,61 @@ class Schema:
         self.fields = []
 
     def add_field(self, name: str, type: str):
-        if type not in [self.TYPE_STRING, self.TYPE_INTEGER, self.TYPE_FLOAT, self.TYPE_BOOLEAN]:
+        if not self.is_valid_field_type(name, type):
             raise Exception('Invalid field type')
         # Raise exception if field name already exists
-        for field in self.fields:
-            if field['name'] == name:
-                raise Exception('Field name already exists')
+        if self.field_exists(name):
+            raise Exception('Field name already exists')
         self.fields.append({
             'name': name,
             'type': type
         })
+
+    def is_valid_field_type(self, name: str, type: str) -> bool:
+        if type not in [self.TYPE_STRING, self.TYPE_INTEGER, self.TYPE_FLOAT, self.TYPE_BOOLEAN]:
+            return False
+        return True
+
+    def field_exists(self, name: str) -> bool:
+        for field in self.fields:
+            if field['name'] == name:
+                return True
+        return False
+
+    def validate_data_schema(self, data: dict) -> bool:
+        for field in self.fields:
+            if field['name'] not in data:
+                return False
+            if not self.validate_data_type(field['name'], data[field['name']]):
+                return False
+
+        return True
+
+    def validate_data_list_schema(self, data: list) -> bool:
+        for row in data:
+            if not self.validate_data_schema(row):
+                return False
+        return True
+
+    def validate_data_type(self, name: str, value) -> bool:
+        for field in self.fields:
+            if field['name'] == name:
+                if field['type'] == self.TYPE_STRING:
+                    return isinstance(value, str)
+                elif field['type'] == self.TYPE_INTEGER:
+                    return isinstance(value, int)
+                elif field['type'] == self.TYPE_FLOAT:
+                    return isinstance(value, float)
+                elif field['type'] == self.TYPE_BOOLEAN:
+                    return isinstance(value, bool)
+        return False
+
+    def remove_field(self, name: str):
+        for i, field in enumerate(self.fields):
+            if field['name'] == name:
+                self.fields.pop(i)
+                return
+        raise Exception('Field name does not exist')
 
     def get_fields(self) -> list:
         return self.fields

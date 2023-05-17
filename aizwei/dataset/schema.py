@@ -9,20 +9,18 @@ class Schema:
         self.fields = []
 
     def add_field(self, name: str, type: str):
-        if not self.is_valid_field_type(name, type):
-            raise Exception('Invalid field type')
         # Raise exception if field name already exists
         if self.field_exists(name):
             raise Exception('Field name already exists')
+        if not self.is_valid_field_type(type):
+            raise Exception('Invalid field type')
         self.fields.append({
             'name': name,
             'type': type
         })
 
-    def is_valid_field_type(self, name: str, type: str) -> bool:
-        if type not in [self.TYPE_STRING, self.TYPE_INTEGER, self.TYPE_FLOAT, self.TYPE_BOOLEAN]:
-            return False
-        return True
+    def is_valid_field_type(self, type: str) -> bool:
+        return type in [self.TYPE_STRING, self.TYPE_INTEGER, self.TYPE_FLOAT, self.TYPE_BOOLEAN]
 
     def field_exists(self, name: str) -> bool:
         for field in self.fields:

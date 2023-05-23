@@ -3,6 +3,7 @@
 from unittest import TestCase
 from unittest.mock import patch
 
+from aizwei.dataset import DataBatch
 from aizwei.dataset.client import Client
 from aizwei.dataset.dataset import Dataset
 from aizwei.dataset.schema import Schema
@@ -43,6 +44,16 @@ class TestClient(TestCase):
         self.assertEqual(Schema.TYPE_INTEGER, dataset.schema.get_field_type('field_number'))
         self.assertEqual(Schema.TYPE_STRING, dataset.schema.get_field_type('field_string'))
         self.assertEqual(Schema.TYPE_FLOAT, dataset.schema.get_field_type('field_float'))
+
+        # Push data
+        data_batch = DataBatch([
+            {'field_number': 1, 'field_string': 'test_string1', 'field_float': 1.0},
+            {'field_number': 2, 'field_string': 'test_string2', 'field_float': 2.0},
+            {'field_number': 3, 'field_string': 'test_string3', 'field_float': 3.0},
+        ], dataset)
+        self.client.push_data(data_batch)
+        dataset = self.client.get_dataset(dataset.id)
+        self.assertIsNotNone(dataset.dataset_url)
 
         # Remove dataset
         self.client.remove_dataset(dataset.id)
